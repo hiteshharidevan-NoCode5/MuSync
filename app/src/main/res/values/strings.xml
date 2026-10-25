@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TunedIn</string>
+    <string name="app_name">MuSync</string>
     
     <!-- Bottom navigation -->
     <string name="home">Home</string>
