@@ -103,7 +103,7 @@ android {
     applicationVariants.all {
         outputs.all {
             val output = this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output?.outputFileName = "TunedIn.apk"
+            output?.outputFileName = "MuSync.apk"
         }
     }
 }
