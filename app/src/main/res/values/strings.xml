@@ -1,4 +1,6 @@
 <resources>
+    <string name="app_name">TunedIn</string>
+    
     <!-- Bottom navigation -->
     <string name="home">Home</string>
     <string name="songs">Songs</string>
