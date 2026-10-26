@@ -12,7 +12,6 @@ import com.zionhuang.innertube.models.SearchSuggestions
 import com.zionhuang.innertube.models.SongItem
 import com.zionhuang.innertube.models.WatchEndpoint
 import com.zionhuang.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
-import com.zionhuang.innertube.models.SearchFilter
 import com.zionhuang.innertube.models.YouTubeClient.Companion.ANDROID_MUSIC
 import com.zionhuang.innertube.models.YouTubeClient.Companion.ANDROID
 import com.zionhuang.innertube.models.YouTubeClient.Companion.IOS
@@ -449,33 +448,10 @@ object YouTube {
             return@runCatching playerResponse
         }
 
-        val safePlayerResponse = innerTube.player(TVHTML5, videoId, playlistId).body<PlayerResponse>()
-        if (safePlayerResponse.playabilityStatus.status != "OK") {
-            return@runCatching playerResponse
-        }
-        val audioStreams = innerTube.pipedStreams(videoId).body<PipedResponse>().audioStreams
-        safePlayerResponse.copy(
-            streamingData = safePlayerResponse.streamingData?.copy(
-                adaptiveFormats = safePlayerResponse.streamingData.adaptiveFormats.filter {
-                    it.isAudio
-                } + audioStreams.map {
-                    PlayerResponse.StreamingData.AdaptiveFormat(
-                        itag = it.itag,
-                        mimeType = it.mimeType,
-                        bitrate = it.bitrate,
-                        averageBitrate = it.bitrate,
-                        contentLength = it.contentLength,
-                        audioQuality = it.quality,
-                        approxDurationMs = null,
-                        lastModified = null,
-                        loudnessDb = null,
-                        url = it.url
-                    )
-                }
-            )
-        )
+        playerResponse = innerTube.player(TVHTML5, videoId, playlistId).body<PlayerResponse>()
+        return@runCatching playerResponse
     }
-
+    
     suspend fun next(endpoint: WatchEndpoint, continuation: String? = null): Result<NextResult> = runCatching {
         val response = innerTube.next(WEB_REMIX, endpoint.videoId, endpoint.playlistId, endpoint.playlistSetVideoId, endpoint.index, endpoint.params, continuation).body<NextResponse>()
         val title = response.contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs[0].tabRenderer.content?.musicQueueRenderer?.header?.musicQueueHeaderRenderer?.subtitle?.runs?.firstOrNull()?.text
