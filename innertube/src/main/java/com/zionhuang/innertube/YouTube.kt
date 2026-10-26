@@ -559,17 +559,16 @@ object YouTube {
             .header?.activeAccountHeaderRenderer
             ?.toAccountInfo()!!
     }
-}
 
-@JvmInline
-value class SearchFilter(val value: String) {
+    @JvmInline
+    value class SearchFilter(val value: String) {
         companion object {
-            val FILTER_SONG = SearchFilter("EgWKAQIIAWoKEAkQBRAKEAMQBA%3D%3D")
-            val FILTER_VIDEO = SearchFilter("EgWKAQIQAWoKEAkQChAFEAMQBA%3D%3D")
-            val FILTER_ALBUM = SearchFilter("EgWKAQIYAWoKEAkQChAFEAMQBA%3D%3D")
-            val FILTER_ARTIST = SearchFilter("EgWKAQIgAWoKEAkQChAFEAMQBA%3D%3D")
-            val FILTER_FEATURED_PLAYLIST = SearchFilter("EgeKAQQoADgBagwQDhAKEAMQBRAJEAQ%3D")
-            val FILTER_COMMUNITY_PLAYLIST = SearchFilter("EgeKAQQoAEABagoQAxAEEAoQCRAF")
+            val FILTER_SONG = SearchFilter("EgWKAQIIAWoQEAMQBBAJEAoQBRAREBAQFQ%3D%3D")
+            val FILTER_VIDEO = SearchFilter("EgWKAQIQAWoQEAMQBBAJEAoQBRAREBAQFQ%3D%3D")
+            val FILTER_ALBUM = SearchFilter("EgWKAQIYAWoQEAMQBBAJEAoQBRAREBAQFQ%3D%3D")
+            val FILTER_ARTIST = SearchFilter("EgWKAQIgAWoQEAMQBBAJEAoQBRAREBAQFQ%3D%3D")
+            val FILTER_FEATURED_PLAYLIST = SearchFilter("EgeKAQQoADgBahAQAxAEEAkQChAFEBEQEBAV")
+            val FILTER_COMMUNITY_PLAYLIST = SearchFilter("EgeKAQQoAEABahAQAxAEEAkQChAFEBEQEBAV")
         }
     }
 
@@ -578,3 +577,4 @@ value class SearchFilter(val value: String) {
     private const val VISITOR_DATA_PREFIX = "Cgt"
 
     const val DEFAULT_VISITOR_DATA = "CgtsZG1ySnZiQWtSbyiMjuGSBg%3D%3D"
+}
