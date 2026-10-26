@@ -12,6 +12,7 @@ import com.zionhuang.innertube.models.SearchSuggestions
 import com.zionhuang.innertube.models.SongItem
 import com.zionhuang.innertube.models.WatchEndpoint
 import com.zionhuang.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
+import com.zionhuang.innertube.models.SearchFilter
 import com.zionhuang.innertube.models.YouTubeClient.Companion.ANDROID_MUSIC
 import com.zionhuang.innertube.models.YouTubeClient.Companion.ANDROID
 import com.zionhuang.innertube.models.YouTubeClient.Companion.IOS
@@ -432,11 +433,12 @@ object YouTube {
 
     suspend fun player(videoId: String, playlistId: String? = null): Result<PlayerResponse> = runCatching {
         var playerResponse: PlayerResponse
-        if (this.cookie != null) { // if logged in: try ANDROID_MUSIC client first because IOS client does not play age restricted songs
+        if (this.cookie != null) {
             playerResponse = innerTube.player(ANDROID_MUSIC, videoId, playlistId).body<PlayerResponse>()
             if (playerResponse.playabilityStatus.status == "OK") {
                 return@runCatching playerResponse
             }
+        }
         playerResponse = innerTube.player(ANDROID, videoId, playlistId).body<PlayerResponse>()
         if (playerResponse.playabilityStatus.status == "OK") {
             return@runCatching playerResponse
@@ -446,6 +448,7 @@ object YouTube {
         if (playerResponse.playabilityStatus.status == "OK") {
             return@runCatching playerResponse
         }
+
         val safePlayerResponse = innerTube.player(TVHTML5, videoId, playlistId).body<PlayerResponse>()
         if (safePlayerResponse.playabilityStatus.status != "OK") {
             return@runCatching playerResponse
@@ -453,12 +456,21 @@ object YouTube {
         val audioStreams = innerTube.pipedStreams(videoId).body<PipedResponse>().audioStreams
         safePlayerResponse.copy(
             streamingData = safePlayerResponse.streamingData?.copy(
-                adaptiveFormats = safePlayerResponse.streamingData.adaptiveFormats.mapNotNull { adaptiveFormat ->
-                    audioStreams.find { it.bitrate == adaptiveFormat.bitrate }?.let {
-                        adaptiveFormat.copy(
-                            url = it.url
-                        )
-                    }
+                adaptiveFormats = safePlayerResponse.streamingData.adaptiveFormats.filter {
+                    it.isAudio
+                } + audioStreams.map {
+                    PlayerResponse.StreamingData.AdaptiveFormat(
+                        itag = it.itag,
+                        mimeType = it.mimeType,
+                        bitrate = it.bitrate,
+                        averageBitrate = it.bitrate,
+                        contentLength = it.contentLength,
+                        audioQuality = it.quality,
+                        approxDurationMs = null,
+                        lastModified = null,
+                        loudnessDb = null,
+                        url = it.url
+                    )
                 }
             )
         )
@@ -569,11 +581,12 @@ object YouTube {
         innerTube.accountMenu(WEB_REMIX).body<AccountMenuResponse>()
             .actions[0].openPopupAction.popup.multiPageMenuRenderer
             .header?.activeAccountHeaderRenderer
-            ?.toAccountInfo()!!
+            ?.toAccountInfo()!
     }
+}
 
-    @JvmInline
-    value class SearchFilter(val value: String) {
+@JvmInline
+value class SearchFilter(val value: String) {
         companion object {
             val FILTER_SONG = SearchFilter("EgWKAQIIAWoKEAkQBRAKEAMQBA%3D%3D")
             val FILTER_VIDEO = SearchFilter("EgWKAQIQAWoKEAkQChAFEAMQBA%3D%3D")
