@@ -581,7 +581,7 @@ object YouTube {
         innerTube.accountMenu(WEB_REMIX).body<AccountMenuResponse>()
             .actions[0].openPopupAction.popup.multiPageMenuRenderer
             .header?.activeAccountHeaderRenderer
-            ?.toAccountInfo()!
+            ?.toAccountInfo()!!
     }
 }
 
