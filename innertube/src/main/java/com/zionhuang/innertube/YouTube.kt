@@ -578,4 +578,3 @@ value class SearchFilter(val value: String) {
     private const val VISITOR_DATA_PREFIX = "Cgt"
 
     const val DEFAULT_VISITOR_DATA = "CgtsZG1ySnZiQWtSbyiMjuGSBg%3D%3D"
-}
