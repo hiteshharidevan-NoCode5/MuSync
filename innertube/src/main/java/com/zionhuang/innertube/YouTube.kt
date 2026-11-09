@@ -430,7 +430,7 @@ object YouTube {
             }
     }
 
-    suspend fun player(videoId: String, playlistId: String? = null): Result<PlayerResponse> = runCatching {
+   suspend fun player(videoId: String, playlistId: String? = null): Result<PlayerResponse> = runCatching {
         var playerResponse: PlayerResponse
         if (this.cookie != null) {
             playerResponse = innerTube.player(ANDROID_MUSIC, videoId, playlistId).body<PlayerResponse>()
@@ -438,12 +438,14 @@ object YouTube {
                 return@runCatching playerResponse
             }
         }
-        playerResponse = innerTube.player(WEB_REMIX, videoId, playlistId).body<PlayerResponse>()
+
+        // Try IOS first (unthrottled and avoids modern web 403 blocks)
+        playerResponse = innerTube.player(IOS, videoId, playlistId).body<PlayerResponse>()
         if (playerResponse.playabilityStatus.status == "OK") {
             return@runCatching playerResponse
         }
 
-        playerResponse = innerTube.player(IOS, videoId, playlistId).body<PlayerResponse>()
+        playerResponse = innerTube.player(WEB_REMIX, videoId, playlistId).body<PlayerResponse>()
         if (playerResponse.playabilityStatus.status == "OK") {
             return@runCatching playerResponse
         }
