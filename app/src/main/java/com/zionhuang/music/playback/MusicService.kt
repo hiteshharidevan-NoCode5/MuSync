@@ -650,7 +650,7 @@ class MusicService : MediaLibraryService(),
                         throw PlaybackException(getString(R.string.error_timeout), throwable, PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT)
                     }
 
-                    else -> throw PlaybackException(getString(R.string.error_unknown), throwable, PlaybackException.ERROR_CODE_REMOTE_ERROR)
+                    else -> throw PlaybackException("${throwable.message ?: throwable.javaClass.simpleName}", throwable, PlaybackException.ERROR_CODE_REMOTE_ERROR)
                 }
             }
             if (playerResponse.playabilityStatus.status != "OK") {
